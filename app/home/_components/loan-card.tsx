@@ -63,6 +63,18 @@ export function LoanCard({
     }
   };
 
+  const calculateInterest = () => {
+    const principal = parseInt(amount);
+    const monthlyRate = 0.1 / 12; // 10% annual rate divided by 12 months
+    const numInstallments = parseInt(installments);
+    const monthlyPayment =
+      (principal * monthlyRate) /
+      (1 - Math.pow(1 + monthlyRate, -numInstallments));
+    const totalPayment = monthlyPayment * numInstallments;
+    const totalInterest = totalPayment - principal;
+    return Math.round(totalInterest);
+  };
+
   return (
     <Card
       className={`p-5 transition-all duration-300 ${
@@ -73,7 +85,7 @@ export function LoanCard({
       onClick={handleClick}
     >
       <div className="flex flex-col space-y-4">
-        <div>
+        <div className="flex justify-between items-start">
           <h2
             className={`text-xl font-medium ${
               disabled || isLoading ? "text-gray-500" : "text-white"
@@ -81,6 +93,15 @@ export function LoanCard({
           >
             {type}
           </h2>
+          <span
+            className={`text-sm font-medium ${
+              disabled || isLoading ? "text-gray-500" : "text-white"
+            }`}
+          >
+            10% APR
+          </span>
+        </div>
+        <div>
           <p
             className={`text-5xl font-bold mt-1 ${
               disabled || isLoading ? "text-gray-400" : "text-white"
@@ -94,6 +115,13 @@ export function LoanCard({
             }`}
           >
             {isLoading ? "Creating loan..." : `${installments} installments`}
+          </p>
+          <p
+            className={`text-sm mt-1 ${
+              disabled || isLoading ? "text-gray-500" : "text-white"
+            }`}
+          >
+            You pay back: ${parseInt(amount) + calculateInterest()}
           </p>
         </div>
         {error && (
